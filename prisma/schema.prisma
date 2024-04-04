@@ -1,0 +1,149 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// UserAccounts table
+model UserAccount {
+  ID                String     @id @default(uuid()) @map("ID")
+  Username          String     @unique
+  Password          String
+  Email             String     @unique
+  ProfilePictureURL String?
+  ContactInfo       String?
+  RegistrationDate  DateTime?
+  UserRating        Rating[]
+  PersonalBookshelf Bookshelf[] @relation("PersonalBookShelf")
+  UserDiscussionThread DiscussionThread[] @relation("UserDiscussionThread")
+  UserFavorite  Favorite[] @relation("UserFavorites")
+  UserHistories ReadingHistory[] @relation("UserReadingHistories")
+  updateAt   DateTime @updatedAt
+  deleteFlag Boolean
+}
+
+// Authors table
+model Author {
+  ID String    @id @default(uuid()) @map("AuthorsID")
+  Name       String
+  BirthDay   DateTime?
+  Biography  String?
+  Books      Book[] @relation("AuthorBook")
+  updateAt   DateTime @updatedAt
+  deleteFlag Boolean
+}
+
+// Books table
+model Book {
+  ID               String    @id @default(uuid()) @map("ID")
+  Title            String
+  Author           Author    @relation("AuthorBook",fields: [AuthorID], references: [ID])
+  AuthorID         String
+  Genre            String?
+  Publisher        String?
+  PublicationDate  DateTime?
+  ISBN             String?      @unique
+  Description      String?
+  CoverImageURL    String?
+  UserRating       Rating?
+  BookPersonal     BookOnShelf[]        @relation("BookOnShelf")
+  Advertisement     Advertisement[]      @relation("Advertisements")
+  DiscussionThreads DiscussionThread[] @relation("BookDiscussionThreads")
+  BookHistories     ReadingHistory[]   @relation("BookReadingHistories")
+  updateAt DateTime @updatedAt
+  deleteFlag Boolean
+}
+
+// UserRatings table
+model Rating {
+  UserID     String
+  BookID     String               @unique
+  Rating     Float
+  ReviewText String?
+  DateRated  DateTime?
+  updateAt   DateTime             @updatedAt
+  deleteFlag Boolean
+  BookRating Book                 @relation(fields: [BookID], references: [ID])
+  User       UserAccount          @relation(fields: [UserID], references: [ID])
+                                  @@unique([UserID,BookID])
+}
+
+// PersonalBookshelf table
+model Bookshelf {
+  ID String                       @id @default(uuid()) @map("ID")
+  User    UserAccount             @relation("PersonalBookShelf",fields: [UserID], references: [ID])
+  UserID  String 
+  BookInShelf  BookOnShelf[]      @relation("ShelfContain") 
+  BookID  String
+  Status  String?
+  Name    String?
+  updateAt DateTime               @updatedAt
+  createAt DateTime 
+  deleteFlag Boolean
+  
+}
+
+model BookOnShelf {
+  BookID String  
+  ShelfID String
+  PersonalBookshelf Bookshelf   @relation("ShelfContain", fields: [ShelfID], references: [ID])
+  Book Book                     @relation("BookOnShelf", fields: [BookID], references: [ID])
+  createAt DateTime
+  updateAt DateTime             @updatedAt
+  deleteFlag Boolean
+  @@id([ShelfID, BookID])
+}
+
+// Favorites table
+model Favorite {
+  ID   String          @id @default(uuid()) @map("ID")
+  User          UserAccount     @relation("UserFavorites", fields: [UserID], references: [ID])
+  UserID        String
+  TypeOF        String
+  RefFavoriteID String?
+  updateAt      DateTime        @updatedAt
+  deleteFlag    Boolean
+}
+
+// DiscussionThreads table
+model DiscussionThread {
+  ID         String      @id @default(uuid()) @map("ID")
+  User       UserAccount @relation("UserDiscussionThread",fields: [UserID], references: [ID])
+  UserID     String
+  Book       Book        @relation("BookDiscussionThreads",fields: [BookID], references: [ID])
+  BookID     String
+  Title      String?
+  Content    String?
+  Timestamp  DateTime?
+  updateAt   DateTime    @updatedAt
+  deleteFlag Boolean
+}
+
+// Advertisements table
+model Advertisement {
+  ID         String     @id @default(uuid()) @map("ID")
+  BookID     String
+  Title      String?
+  Content    String?
+  ImageURL   String?
+  ExpiryDate DateTime?
+  updateAt DateTime     @updatedAt
+  deleteFlag Boolean
+  Book       Book       @relation("Advertisements",fields: [BookID], references: [ID])
+}
+
+// ReadingHistories table
+model ReadingHistory {
+  UserID      String
+  BookID      String
+  PageRead    Int
+  Status      String?
+  Percentage  Float?
+  updateAt    DateTime       @updatedAt
+  User        UserAccount    @relation("UserReadingHistories",fields: [UserID], references: [ID])
+  Book        Book           @relation("BookReadingHistories",fields: [BookID], references: [ID])
+  @@id([UserID, BookID])
+}
