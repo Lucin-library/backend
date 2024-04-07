@@ -9,141 +9,151 @@ datasource db {
 
 // UserAccounts table
 model UserAccount {
-  ID                String     @id @default(uuid()) @map("ID")
-  Username          String     @unique
-  Password          String
-  Email             String     @unique
-  ProfilePictureURL String?
-  ContactInfo       String?
-  RegistrationDate  DateTime?
-  UserRating        Rating[]
-  PersonalBookshelf Bookshelf[] @relation("PersonalBookShelf")
-  UserDiscussionThread DiscussionThread[] @relation("UserDiscussionThread")
-  UserFavorite  Favorite[] @relation("UserFavorites")
-  UserHistories ReadingHistory[] @relation("UserReadingHistories")
-  updateAt   DateTime @updatedAt
-  deleteFlag Boolean
+  id                   String             @id @default(uuid()) @map("id")
+  email                String?            @unique
+  password             String?
+  fullName             String?
+  profilePictureURL    String?
+  contactInfo          String?
+  birthDate            DateTime?
+  gender               Int?
+  userRating           Rating[]
+  personalBookshelf    Bookshelf[]        @relation("PersonalBookShelf")
+  userDiscussionThread DiscussionThread[] @relation("UserDiscussionThread")
+  userFavorite         Favorite[]         @relation("UserFavorites")
+  userHistories        ReadingHistory[]   @relation("UserReadingHistories")
+  updateAt             DateTime?          @updatedAt
+  createAt             DateTime?          @default(now())
+  deleteFlag           Boolean?           @default(false)
 }
 
 // Authors table
 model Author {
-  ID String    @id @default(uuid()) @map("AuthorsID")
-  Name       String
-  BirthDay   DateTime?
-  Biography  String?
-  Books      Book[] @relation("AuthorBook")
-  updateAt   DateTime @updatedAt
+  id         String    @id @default(uuid()) @map("id")
+  name       String
+  birthDay   DateTime?
+  biography  String?
+  books      Book[]    @relation("AuthorBook")
+  updateAt   DateTime  @updatedAt
+  createAt   DateTime  @default(now())
   deleteFlag Boolean
 }
 
 // Books table
 model Book {
-  ID               String    @id @default(uuid()) @map("ID")
-  Title            String
-  Author           Author    @relation("AuthorBook",fields: [AuthorID], references: [ID])
-  AuthorID         String
-  Genre            String?
-  Publisher        String?
-  PublicationDate  DateTime?
-  ISBN             String?      @unique
-  Description      String?
-  CoverImageURL    String?
-  UserRating       Rating?
-  BookPersonal     BookOnShelf[]        @relation("BookOnShelf")
-  Advertisement     Advertisement[]      @relation("Advertisements")
-  DiscussionThreads DiscussionThread[] @relation("BookDiscussionThreads")
-  BookHistories     ReadingHistory[]   @relation("BookReadingHistories")
-  updateAt DateTime @updatedAt
-  deleteFlag Boolean
+  id                String             @id @default(uuid()) @map("id")
+  title             String
+  author            Author             @relation("AuthorBook", fields: [authorId], references: [id])
+  authorId          String
+  genre             String?
+  publisher         String?
+  publicationDate   DateTime?
+  isBN              String?
+  description       String?
+  coverImageURL     String?
+  userRating        Rating?
+  bookPersonal      BookOnShelf[]      @relation("BookOnShelf")
+  advertisement     Advertisement[]    @relation("Advertisements")
+  discussionThreads DiscussionThread[] @relation("BookDiscussionThreads")
+  bookHistories     ReadingHistory[]   @relation("BookReadingHistories")
+  updateAt          DateTime           @updatedAt
+  deleteFlag        Boolean            @default(false)
+  createAt          DateTime           @default(now())
 }
 
 // UserRatings table
 model Rating {
-  UserID     String
-  BookID     String               @unique
-  Rating     Float
-  ReviewText String?
-  DateRated  DateTime?
-  updateAt   DateTime             @updatedAt
-  deleteFlag Boolean
-  BookRating Book                 @relation(fields: [BookID], references: [ID])
-  User       UserAccount          @relation(fields: [UserID], references: [ID])
-                                  @@unique([UserID,BookID])
+  userId     String
+  bookId     String      @unique
+  rating     Float
+  reviewText String?
+  dateRated  DateTime?
+  updateAt   DateTime    @updatedAt
+  deleteFlag Boolean     @default(false)
+  bookRating Book        @relation(fields: [bookId], references: [id])
+  user       UserAccount @relation(fields: [userId], references: [id])
+
+  @@unique([userId, bookId])
 }
 
 // PersonalBookshelf table
 model Bookshelf {
-  ID String                       @id @default(uuid()) @map("ID")
-  User    UserAccount             @relation("PersonalBookShelf",fields: [UserID], references: [ID])
-  UserID  String 
-  BookInShelf  BookOnShelf[]      @relation("ShelfContain") 
-  BookID  String
-  Status  String?
-  Name    String?
-  updateAt DateTime               @updatedAt
-  createAt DateTime 
-  deleteFlag Boolean
-  
+  id          String        @id @default(uuid()) @map("id")
+  user        UserAccount   @relation("PersonalBookShelf", fields: [userId], references: [id])
+  userId      String
+  bookInShelf BookOnShelf[] @relation("ShelfContain")
+  bookId      String
+  status      String?
+  name        String?
+  updateAt    DateTime      @updatedAt
+  createAt    DateTime      @default(now())
+  deleteFlag  Boolean       @default(false)
 }
 
 model BookOnShelf {
-  BookID String  
-  ShelfID String
-  PersonalBookshelf Bookshelf   @relation("ShelfContain", fields: [ShelfID], references: [ID])
-  Book Book                     @relation("BookOnShelf", fields: [BookID], references: [ID])
-  createAt DateTime
-  updateAt DateTime             @updatedAt
-  deleteFlag Boolean
-  @@id([ShelfID, BookID])
+  bookId            String
+  shelfId           String
+  personalBookshelf Bookshelf @relation("ShelfContain", fields: [shelfId], references: [id])
+  book              Book      @relation("BookOnShelf", fields: [bookId], references: [id])
+  createAt          DateTime  @default(now())
+  updateAt          DateTime  @updatedAt
+  deleteFlag        Boolean   @default(false)
+
+  @@id([shelfId, bookId])
 }
 
 // Favorites table
 model Favorite {
-  ID   String          @id @default(uuid()) @map("ID")
-  User          UserAccount     @relation("UserFavorites", fields: [UserID], references: [ID])
-  UserID        String
-  TypeOF        String
-  RefFavoriteID String?
-  updateAt      DateTime        @updatedAt
-  deleteFlag    Boolean
+  id            String      @id @default(uuid()) @map("id")
+  user          UserAccount @relation("UserFavorites", fields: [userId], references: [id])
+  userId        String
+  typeOF        String
+  refFavoriteId String?
+  updateAt      DateTime    @updatedAt
+  deleteFlag    Boolean     @default(false)
 }
 
 // DiscussionThreads table
 model DiscussionThread {
-  ID         String      @id @default(uuid()) @map("ID")
-  User       UserAccount @relation("UserDiscussionThread",fields: [UserID], references: [ID])
-  UserID     String
-  Book       Book        @relation("BookDiscussionThreads",fields: [BookID], references: [ID])
-  BookID     String
-  Title      String?
-  Content    String?
-  Timestamp  DateTime?
+  id         String      @id @default(uuid()) @map("id")
+  user       UserAccount @relation("UserDiscussionThread", fields: [userId], references: [id])
+  userId     String
+  book       Book        @relation("BookDiscussionThreads", fields: [bookId], references: [id])
+  bookId     String
+  title      String?
+  content    String?
+  timestamp  DateTime?
+  createAt   DateTime    @default(now())
   updateAt   DateTime    @updatedAt
-  deleteFlag Boolean
+  deleteFlag Boolean     @default(false)
 }
 
 // Advertisements table
 model Advertisement {
-  ID         String     @id @default(uuid()) @map("ID")
-  BookID     String
-  Title      String?
-  Content    String?
-  ImageURL   String?
-  ExpiryDate DateTime?
-  updateAt DateTime     @updatedAt
-  deleteFlag Boolean
-  Book       Book       @relation("Advertisements",fields: [BookID], references: [ID])
+  id         String    @id @default(uuid()) @map("id")
+  bookId     String
+  title      String?
+  content    String?
+  imageURL   String?
+  expiryDate DateTime?
+  updateAt   DateTime  @updatedAt
+  createAt   DateTime  @default(now())
+  deleteFlag Boolean   @default(false)
+  book       Book      @relation("Advertisements", fields: [bookId], references: [id])
 }
 
 // ReadingHistories table
 model ReadingHistory {
-  UserID      String
-  BookID      String
-  PageRead    Int
-  Status      String?
-  Percentage  Float?
-  updateAt    DateTime       @updatedAt
-  User        UserAccount    @relation("UserReadingHistories",fields: [UserID], references: [ID])
-  Book        Book           @relation("BookReadingHistories",fields: [BookID], references: [ID])
-  @@id([UserID, BookID])
+  userId     String
+  bookId     String
+  pageRead   Int
+  status     String?
+  percentage Float?
+  updateAt   DateTime    @updatedAt
+  createAt   DateTime    @default(now())
+  deleteFlag Boolean     @default(false)
+  user       UserAccount @relation("UserReadingHistories", fields: [userId], references: [id])
+  book       Book        @relation("BookReadingHistories", fields: [bookId], references: [id])
+
+  @@id([userId, bookId])
 }
