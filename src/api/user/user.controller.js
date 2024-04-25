@@ -1,14 +1,18 @@
 import { Service } from "./user.service.js";
 
-const login = (req, res, next) => {
+const update = async (req, res) => {
   try {
-    // Service.login(req.body);
-    res.status(200).json("Dcm");
-  } catch (e) {
-    res.status(400).send(e.message);
+    const newUser = await Service.update(req, res);
+    res.status(200).json(newUser);
+  } catch (err) {
+    console.log(err);
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    res.status(err.statusCode).json(err.message);
   }
 };
 
 export const Controller = {
-  login: login,
+  update,
 };

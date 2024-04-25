@@ -1,13 +1,20 @@
-// import { User } from "./user.model.js";
+import prisma from "../../config/prisma.instance.js";
+import { DataBaseErrorHandler } from "../../error/DataBaseError.js";
 
-const login = async (user) => {
+const update = async (req, res) => {
   try {
-    console.log(user);
-    return "user";
-  } catch (err) {
-    throw new Error("Can't login");
+    const updatedUser = await prisma.userAccount.update({
+      where: {
+        id: req.params.id,
+      },
+      data: req.body,
+    });
+    return updatedUser;
+  } catch (error) {
+    throw new DataBaseErrorHandler.CannotUpdate("user");
   }
 };
+
 export const Service = {
-  login: login,
+  update,
 };

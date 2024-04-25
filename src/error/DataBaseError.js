@@ -22,7 +22,16 @@ class UserAlreadyExits extends DataBaseError {
   }
 }
 
+class CannotUpdate extends DataBaseError {
+  constructor(entity) {
+    super(`Can not update ${entity}`);
+    this.name = this.constructor.name;
+    this.entity = entity;
+  }
+}
+
 export const DataBaseErrorHandler = {
   CannotCreate,
   UserAlreadyExits,
+  CannotUpdate,
 };

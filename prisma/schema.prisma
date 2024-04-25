@@ -120,9 +120,10 @@ model DiscussionThread {
   userId     String
   book       Book        @relation("BookDiscussionThreads", fields: [bookId], references: [id])
   bookId     String
-  title      String?
+  parentId   String?     @map("parent_id")
+  parent     DiscussionThread? @relation("ParentDiscussionThread", fields: [parentId], references: [id])
+  childThreads DiscussionThread[] @relation("ParentDiscussionThread")
   content    String?
-  timestamp  DateTime?
   createAt   DateTime    @default(now())
   updateAt   DateTime    @updatedAt
   deleteFlag Boolean     @default(false)
