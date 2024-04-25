@@ -16,7 +16,7 @@ class CannotCreate extends DataBaseError {
 
 class UserAlreadyExits extends DataBaseError {
   constructor(entity) {
-    super(`Account with ${entity} already exits`);
+    super(entity);
     this.name = this.constructor.name;
     this.entity = entity;
   }
