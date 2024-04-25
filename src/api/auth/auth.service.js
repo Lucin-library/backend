@@ -4,7 +4,7 @@ import { DataBaseErrorHandler } from "../../error/DataBaseError.js";
 
 const login = async (email, password) => {
   try {
-    const user = await prisma.userAccount.findUniqueOrThrow({
+    const user = await prisma.user_account.findUniqueOrThrow({
       where: {
         email: email,
         password: password,
@@ -19,29 +19,31 @@ const login = async (email, password) => {
 };
 
 const register = async (user) => {
-  const userInfo = await prisma.userAccount.findUnique({
+  const userInfo = await prisma.user_account.findUnique({
     where: {
       email: user.email,
     },
   });
 
-  if (userInfo == null) {
+  if (!userInfo) {
     const userParameter = {
       email: user.email,
       password: user.password,
-      fullName: user.fullName,
-      birthDate: new Date(user.dayOfBirth),
+      full_name: user.full_name,
+      birthDate: new Date(user.birth_day),
       gender: user.gender,
-      contactInfo: user.phoneNumber,
+      contactInfo: user.phone_number,
     };
 
     try {
-      const newUser = await prisma.userAccount.create({
+      const newUser = await prisma.user_account.create({
         data: userParameter,
       });
       return Promise.resolve(newUser);
     } catch (err) {
-      throw new DataBaseErrorHandler.CannotCreate("user");
+      throw new DataBaseErrorHandler.CannotCreate(
+        `${user.email} already exits`
+      );
     }
   } else {
     throw new DataBaseErrorHandler.UserAlreadyExits({ entity: user.email });

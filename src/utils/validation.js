@@ -1,6 +1,8 @@
 import Joi from "joi";
+
 const registerValidate = (data) => {
   console.log({ validate: data });
+
   const accountSchema = Joi.object({
     email: Joi.string().email().lowercase().required(),
     fullName: Joi.string().required(),

@@ -6,10 +6,14 @@ const login = async (req, res, next) => {
   try {
     const { error } = validate.loginValidate(req.body);
     if (error) throw new InputErrorHandler.Validate(error.details[0].message);
+
     const { email, password } = req.body;
+
     await Service.login(email, password);
+    console.log("login suceesfully");
     res.status(200).json("Login successfully");
   } catch (e) {
+    console.log(e.message);
     res.status(e.statusCode).json(e.message);
   }
 };
@@ -21,7 +25,6 @@ const register = async (req, res, next) => {
     const user = await Service.register(req.body);
     res.status(200).json(user);
   } catch (err) {
-    console.log(err);
     if (!err.statusCode) {
       err.statusCode = 500;
     }
@@ -30,6 +33,6 @@ const register = async (req, res, next) => {
 };
 
 export const Controller = {
-  login: login,
-  register: register,
+  login,
+  register,
 };
