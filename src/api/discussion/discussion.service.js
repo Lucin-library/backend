@@ -2,7 +2,7 @@ import prisma from "../../config/prisma.instance.js";
 
 const create = async (req, res) => {
   try {
-    const comment = await prisma.discussionThread.create({ data: req.body });
+    const comment = await prisma.discussion_thread.create({ data: req.body });
     return comment;
   } catch (error) {
     console.log(error);
@@ -11,7 +11,7 @@ const create = async (req, res) => {
 
 const getAllComment = async (req, res) => {
   try {
-    const comments = await prisma.discussionThread.findMany({
+    const comments = await prisma.discussion_thread.findMany({
       where: {
         deleteFlag: false,
       },

@@ -25,7 +25,7 @@ const getAllBook = async (req, res) => {
     });
 
     if (books !== null) {
-      books = books.filter((book) => book.author.deleteFlag === false);
+      books = books.filter((book) => book.author.deleteFlag === false); //?
     }
     return books;
   } catch (error) {

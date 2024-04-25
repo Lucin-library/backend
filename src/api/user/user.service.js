@@ -3,7 +3,7 @@ import { DataBaseErrorHandler } from "../../error/DataBaseError.js";
 
 const update = async (req, res) => {
   try {
-    const updatedUser = await prisma.userAccount.update({
+    const updatedUser = await prisma.user_account.update({
       where: {
         id: req.params.id,
       },
