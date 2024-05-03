@@ -13,7 +13,7 @@ const getAllAuthor = async (req, res) => {
   try {
     const authors = await prisma.author.findMany({
       where: {
-        deleteFlag: false,
+        delete_flag: false,
       },
       include: {
         books: true,
@@ -30,7 +30,7 @@ const getAuthorById = async (req, res) => {
     const authors = await prisma.author.findUnique({
       where: {
         id: req.params.id,
-        deleteFlag: false,
+        delete_flag: false,
       },
       include: {
         books: true,
@@ -63,7 +63,7 @@ const deleteAuthor = async (req, res) => {
         id: req.params.id,
       },
       data: {
-        deleteFlag: true,
+        delete_flag: true,
       },
     });
   } catch (error) {

@@ -17,11 +17,11 @@ model user_account {
   contact_info           String?
   birth_date             DateTime?
   gender                 Int?
-  user_rating            rating[]
+  user_rating            rating[]            @relation("UserRating")
   bookmark               bookmark[]
   personal_bookshelf     bookshelf[]         @relation("PersonalbookShelf")
-  user_discussion_thread discussion_thread[] @relation("Userdiscussion_thread")
   user_favorite          favorite[]          @relation("Userfavorites")
+  user_discussion_thread discussion_thread[] @relation("Userdiscussion_thread")
   user_histories         reading_history[]   @relation("UserReadingHistories")
   update_at              DateTime?           @updatedAt
   create_at              DateTime?           @default(now())
@@ -53,10 +53,11 @@ model book {
   description        String?
   cover_image_url    String?
   chapters           chapter[]
-  user_rating        rating?
+  user_rating        rating[]            @relation("BookRating")
   book_mark          bookmark[]
   book_personal      book_on_shelf[]     @relation("book_on_shelf")
   advertisement      advertisement[]     @relation("advertisements")
+  favorites   favorite[] @relation("Bookfavorites")
   discussion_threads discussion_thread[] @relation("bookdiscussion_threads")
   book_histories     reading_history[]   @relation("bookReadingHistories")
   update_at          DateTime            @updatedAt
@@ -96,16 +97,16 @@ model contents {
 // Userratings table
 model rating {
   user_id     String
-  book_id     String       @unique
+  book_id     String       
   rating      Float
   review_text String?
   date_rated  DateTime?
   update_at   DateTime     @updatedAt
   delete_flag Boolean      @default(false)
-  book_rating book         @relation(fields: [book_id], references: [id])
-  user        user_account @relation(fields: [user_id], references: [id])
+  book_rating book         @relation("BookRating", fields: [book_id], references: [id])
+  user        user_account @relation("UserRating", fields: [user_id], references: [id])
 
-  @@unique([user_id, book_id])
+  @@id([user_id, book_id])
 }
 
 // Personalbookshelf table
@@ -136,14 +137,15 @@ model book_on_shelf {
 
 // favorites table
 model favorite {
-  id             String       @id @default(uuid()) @map("id")
   user           user_account @relation("Userfavorites", fields: [user_id], references: [id])
   user_id        String
-  type_of        String
-  reffavorite_id String?
+  book           book         @relation("Bookfavorites", fields: [book_id], references: [id])
+  book_id        String
   update_at      DateTime     @updatedAt
   delete_flag    Boolean      @default(false)
+  @@id([user_id, book_id])
 }
+
 
 // discussion_threads table
 model discussion_thread {
@@ -191,6 +193,7 @@ model reading_history {
 
 // Define the model for the bookmarks table
 model bookmark {
+  id        String       @id @default(uuid()) @map("id")
   user      user_account @relation(fields: [user_id], references: [id])
   user_id   String
   book      book         @relation(fields: [book_id], references: [id])
@@ -198,6 +201,5 @@ model bookmark {
   page      Int
   create_at DateTime     @default(now())
   update_at DateTime     @updatedAt
-
-  @@id([user_id, book_id])
+  delete_flag Boolean   @default(false)
 }

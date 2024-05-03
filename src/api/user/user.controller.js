@@ -1,5 +1,15 @@
 import { Service } from "./user.service.js";
 
+const getAllUser = async (req, res) => {
+  try {
+    const users = await Service.getAllUser(req, res);
+    if (users === null) res.status(200).json("Khong co user hop le!");
+    else res.status(200).json(users);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 const update = async (req, res) => {
   try {
     const newUser = await Service.update(req, res);
@@ -14,5 +24,6 @@ const update = async (req, res) => {
 };
 
 export const Controller = {
+  getAllUser,
   update,
 };

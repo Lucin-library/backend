@@ -15,6 +15,36 @@ const update = async (req, res) => {
   }
 };
 
+const getAllUser = async (req, res) => {
+  try {
+    let users = await prisma.user_account.findMany({
+      where: {
+        delete_flag: false,
+      },
+    });
+    return users;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const getUserById = async (userId) => {
+  try {
+    const user = await prisma.user_account.findUnique({
+      where: {
+        id: userId,
+        delete_flag: false,
+      },
+    });
+
+    return user;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 export const Service = {
   update,
+  getAllUser,
+  getUserById,
 };
