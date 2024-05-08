@@ -69,6 +69,9 @@ export const getBooks = async (page, pageSize) => {
     const books = await prisma.book.findMany({
       skip: (page - 1) * pageSize,
       take: pageSize,
+      include: {
+        author: true,
+      },
     });
     //if (books.length === 0) throw new NotfoundHandler.EntityNotFound("Book");
     return books;
@@ -163,9 +166,14 @@ const searchBooks = async (name) => {
 const recommendByAuthor = async (page, pageSize, authorId) => {
   try {
     const books = await prisma.book.findMany({
-      where: { author_id: authorId },
+      where: {
+        author_id: authorId,
+      },
       skip: (page - 1) * pageSize,
       take: pageSize,
+      include: {
+        author: true,
+      },
     });
     if (books.length === 0) throw new NotfoundHandler.EntityNotFound("Book");
     return books;
@@ -181,9 +189,21 @@ const recommendByGenre = async (page, pageSize, genre) => {
       where: { genre: genre },
       skip: (page - 1) * pageSize,
       take: pageSize,
+      include: {
+        author: true,
+      },
     });
     if (books.length === 0) throw new NotfoundHandler.EntityNotFound("Book");
-    return books;
+    const totalBooks = await prisma.book.count({
+      where: { genre: genre },
+    });
+    const lastPage = Math.ceil(totalBooks / pageSize);
+    const result = {
+      books: books,
+      lastPage: lastPage,
+    };
+
+    return result;
   } catch (err) {
     console.error("Error getting books:", err);
     throw err;

@@ -6,6 +6,7 @@ import discussionRouter from "../api/discussion/discussion.router.js";
 import bookmarkRouter from "../api/bookmark/bookmark.router.js";
 import favoriteRouter from "../api/favorite/favorite.router.js";
 import ratingRouter from "../api/rating/rating.router.js";
+import genreRouter from "../api/genre/genre.router.js";
 
 const initRoute = (app) => {
   app.use("/v1/api/user", userRoute);
@@ -16,5 +17,6 @@ const initRoute = (app) => {
   app.use("/v1/api/bookmark", bookmarkRouter);
   app.use("/v1/api/favorite", favoriteRouter);
   app.use("/v1/api/rating", ratingRouter);
+  app.use("/v1/api/genre", genreRouter);
 };
 export default initRoute;
